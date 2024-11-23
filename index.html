@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台灣退休金計算器 - 3分鐘投資理財</title>
+    <!-- React 相關 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <!-- 添加電子報訂閱腳本 -->
+    <!-- 電子報訂閱 Script -->
     <script async data-uid="5d34bc689d" src="https://3min-investment.kit.com/5d34bc689d/index.js"></script>
+    <style>
+        /* 確保表單元素正常顯示 */
+        form[data-uid="5d34bc689d"] {
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 p-4">
     <div id="root"></div>
@@ -209,7 +216,12 @@
                     {/* 電子報訂閱區塊 */}
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-xl font-bold mb-4">訂閱更多投資資訊</h2>
-                        <div data-uid="5d34bc689d"></div>
+                        <form data-uid="5d34bc689d"></form>
+                    </div>
+
+                    {/* 頁尾資訊 */}
+                    <div className="text-center text-gray-600 text-sm">
+                        © 2024 3分鐘投資理財. All rights reserved.
                     </div>
                 </div>
             );
@@ -218,6 +230,5 @@
         // 渲染應用
         ReactDOM.render(<RetirementCalculator />, document.getElementById('root'));
     </script>
-    <script async data-uid="5d34bc689d" src="https://3min-investment.kit.com/5d34bc689d/index.js"></script>
 </body>
 </html>
