@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台灣退休金計算器 - 3分鐘投資理財</title>
+    <title>勞退自願提撥比較 - 3分鐘投資理財</title>
     <!-- React 相關 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -111,7 +111,7 @@
                                 alt="3分鐘投資理財" 
                                 className="h-16 w-auto mr-4"
                             />
-                            <h1 className="text-2xl font-bold">自願提撥6% 投資比較計算機</h1>
+                            <h1 className="text-2xl font-bold">勞退自願提撥6% 還是自己投資？</h1>
                         </div>
                     </div>
 
@@ -120,8 +120,8 @@
                         <div className="bg-yellow-50 p-4 rounded-lg mb-6">
                             <h2 className="font-bold mb-3">重要說明</h2>
                             <ul className="space-y-2">
-                                <li>• 自願提繳退休金扣除金額上限為108,000元/年（月薪15萬 × 6% × 12個月）</li>
-                                <li>• 勞退基金保證最低收益率為1.58%（兩年期定存利率）</li>
+                                <li>• 自願提繳的上限是108,000元/年</li>
+                                <li>• 勞退基金保證收益率是1.58%（兩年定存利率）</li>
                                 <li>• SPY 是追蹤美國500大企業的指數ETF</li>
                             </ul>
                         </div>
@@ -207,8 +207,8 @@
                                             : `以您的情況，自願提撥6%選擇投入勞退基金可能較適合，可多獲得 ${formatNumber(-results.difference)} 元，且風險較低。`}
                                     </p>
                                     <p className="text-sm mb-2">
-                                        註1：此計算僅比較自願提撥6%的投資選擇，強制提撥6%已預設投入勞退基金。
-                                        勞退基金報酬率（近十年）：6.74%（保證最低1.58%），SPY十年年化報酬率：12.9%。
+                                        註1：此計算僅比較自願提撥6%的投資選擇與節稅效果。
+                                        勞退基金報酬率（近十年多）：6.74%，美股SPY十年年化報酬率：12.9%。
                                         SPY為美股標的，追蹤標準普爾500指數，需考慮匯率風險。
                                     </p>
                                     <p className="text-sm">
