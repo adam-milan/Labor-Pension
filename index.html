@@ -1,0 +1,186 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+const RetirementCalculator = () => {
+  const [monthlySalary, setMonthlySalary] = useState(50000);
+  const [age, setAge] = useState(30);
+  const [retirementAge, setRetirementAge] = useState(65);
+  const [results, setResults] = useState(null);
+
+  const MAX_MONTHLY_SALARY = 150000;  // 自願提撥計算上限
+  
+  const calculateTaxRate = (annualSalary) => {
+    const brackets = [
+      { limit: 560000, rate: 0.05 },
+      { limit: 1260000, rate: 0.12 },
+      { limit: 2520000, rate: 0.20 },
+      { limit: 4720000, rate: 0.30 },
+      { limit: Infinity, rate: 0.40 }
+    ];
+
+    for (const bracket of brackets) {
+      if (annualSalary <= bracket.limit) {
+        return bracket.rate;
+      }
+    }
+    return 0.40;
+  };
+
+  const calculateReturns = () => {
+    const calculatedSalary = Math.min(monthlySalary, MAX_MONTHLY_SALARY);
+    const annualSalary = calculatedSalary * 12;
+    const taxRate = calculateTaxRate(annualSalary);
+    const investmentPeriod = retirementAge - age;
+    
+    const laborFundRate = 0.0674;
+    const spyRate = 0.129;
+    
+    const voluntaryContribution = calculatedSalary * 0.06 * 12;
+    const annualTaxSaving = voluntaryContribution * taxRate;
+    const totalTaxSaving = annualTaxSaving * investmentPeriod;
+    
+    const laborFundReturn = voluntaryContribution * 
+      ((1 + laborFundRate) ** investmentPeriod - 1) / laborFundRate;
+    const laborFundTotal = laborFundReturn + totalTaxSaving;
+    
+    const spyReturn = voluntaryContribution * 
+      ((1 + spyRate) ** investmentPeriod - 1) / spyRate;
+
+    return {
+      investmentPeriod,
+      annualContribution: voluntaryContribution,
+      taxRate,
+      annualTaxSaving,
+      laborFundTotal,
+      spyReturn,
+      difference: spyReturn - laborFundTotal,
+      isExceedingMaxSalary: monthlySalary > MAX_MONTHLY_SALARY,
+      actualMonthlySalary: calculatedSalary
+    };
+  };
+
+  useEffect(() => {
+    const result = calculateReturns();
+    setResults(result);
+  }, [monthlySalary, age, retirementAge]);
+
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('zh-TW').format(Math.round(num));
+  };
+
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-8">
+      <div className="bg-white rounded-lg p-6 shadow-sm">
+        <h1 className="text-2xl font-bold mb-6">自願提撥6% 投資比較計算機</h1>
+        
+        <div className="bg-yellow-50 p-4 rounded-lg mb-6">
+          <h2 className="font-bold mb-3">重要說明</h2>
+          <ul className="space-y-2">
+            <li>• 自願提繳退休金扣除金額上限為108,000元/年（月薪15萬 × 6% × 12個月）</li>
+            <li>• 勞退基金保證最低收益率為1.58%（兩年期定存利率）</li>
+            <li>• SPY 是追蹤美國500大企業的指數ETF</li>
+          </ul>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block font-medium mb-1">月薪（元）</label>
+            <input
+              type="number"
+              value={monthlySalary}
+              onChange={(e) => setMonthlySalary(Number(e.target.value))}
+              className="w-full p-2 border rounded"
+              min="0"
+              step="1000"
+            />
+          </div>
+          
+          <div>
+            <label className="block font-medium mb-1">目前年齡</label>
+            <input
+              type="number"
+              value={age}
+              onChange={(e) => setAge(Number(e.target.value))}
+              className="w-full p-2 border rounded"
+              min="0"
+              max="100"
+            />
+          </div>
+          
+          <div>
+            <label className="block font-medium mb-1">預計退休年齡</label>
+            <input
+              type="number"
+              value={retirementAge}
+              onChange={(e) => setRetirementAge(Number(e.target.value))}
+              className="w-full p-2 border rounded"
+              min="0"
+              max="100"
+            />
+          </div>
+        </div>
+
+        {results && (
+          <div className="space-y-6">
+            {results.isExceedingMaxSalary && (
+              <div className="bg-yellow-50 p-3 rounded-lg text-sm">
+                注意：您的月薪超過計算上限，實際計算採用月薪15萬元。
+              </div>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-bold mb-3">基本資訊</h3>
+                <div className="space-y-2">
+                  <p>投資期間：{results.investmentPeriod} 年</p>
+                  <p>年提撥金額：{formatNumber(results.annualContribution)} 元</p>
+                  <p>適用稅率：{(results.taxRate * 100).toFixed(1)}%</p>
+                  <p>每年節稅：{formatNumber(results.annualTaxSaving)} 元</p>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-bold mb-3">報酬比較</h3>
+                <div className="space-y-2">
+                  <p>選擇勞退：{formatNumber(results.laborFundTotal)} 元</p>
+                  <p>選擇SPY：{formatNumber(results.spyReturn)} 元</p>
+                  <p className="mt-3">
+                    差額：
+                    <span className={results.difference > 0 ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                      {formatNumber(Math.abs(results.difference))} 元
+                      {results.difference > 0 ? ' (SPY較優)' : ' (勞退較優)'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-bold mb-3">投資建議</h3>
+              <p className="mb-4">
+                {results.difference > 0 
+                  ? `以您的情況，自願提撥6%選擇投資SPY可能會多賺 ${formatNumber(results.difference)} 元，但請注意需承擔匯率風險與市場波動。` 
+                  : `以您的情況，自願提撥6%選擇投入勞退基金可能較適合，可多獲得 ${formatNumber(-results.difference)} 元，且風險較低。`}
+              </p>
+              <p className="text-sm mb-2">
+                註1：此計算僅比較自願提撥6%的投資選擇，強制提撥6%已預設投入勞退基金。
+                勞退基金報酬率（近十年）：6.74%（保證最低1.58%），SPY十年年化報酬率：12.9%。
+                SPY為美股標的，追蹤標準普爾500指數，需考慮匯率風險。
+              </p>
+              <p className="text-sm">
+                註2：進行投資決策時，務必審慎評估，並自負投資風險及盈虧，過去績效不代表未來收益。
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-bold mb-4">訂閱更多投資資訊</h2>
+        <div data-uid="5d34bc689d"></div>
+      </div>
+    </div>
+  );
+};
+
+export default RetirementCalculator;
