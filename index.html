@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 const RetirementCalculator = () => {
+  // Initialize state variables
   const [monthlySalary, setMonthlySalary] = useState(50000);
   const [age, setAge] = useState(30);
   const [retirementAge, setRetirementAge] = useState(65);
   const [results, setResults] = useState(null);
 
+  // Constants
   const MAX_MONTHLY_SALARY = 150000;  // 自願提撥計算上限
   
+  /**
+   * Calculate tax rate based on annual salary brackets
+   */
   const calculateTaxRate = (annualSalary) => {
     const brackets = [
       { limit: 560000, rate: 0.05 },
@@ -26,23 +31,31 @@ const RetirementCalculator = () => {
     return 0.40;
   };
 
+  /**
+   * Calculate investment returns for both Labor Fund and SPY
+   */
   const calculateReturns = () => {
+    // Calculate base values
     const calculatedSalary = Math.min(monthlySalary, MAX_MONTHLY_SALARY);
     const annualSalary = calculatedSalary * 12;
     const taxRate = calculateTaxRate(annualSalary);
     const investmentPeriod = retirementAge - age;
     
-    const laborFundRate = 0.0674;
-    const spyRate = 0.129;
+    // Investment return rates
+    const laborFundRate = 0.0674;  // 勞退基金報酬率
+    const spyRate = 0.129;         // SPY報酬率
     
+    // Calculate contributions and tax savings
     const voluntaryContribution = calculatedSalary * 0.06 * 12;
     const annualTaxSaving = voluntaryContribution * taxRate;
     const totalTaxSaving = annualTaxSaving * investmentPeriod;
     
+    // Calculate Labor Fund returns
     const laborFundReturn = voluntaryContribution * 
       ((1 + laborFundRate) ** investmentPeriod - 1) / laborFundRate;
     const laborFundTotal = laborFundReturn + totalTaxSaving;
     
+    // Calculate SPY returns
     const spyReturn = voluntaryContribution * 
       ((1 + spyRate) ** investmentPeriod - 1) / spyRate;
 
@@ -59,11 +72,13 @@ const RetirementCalculator = () => {
     };
   };
 
+  // Update results when inputs change
   useEffect(() => {
     const result = calculateReturns();
     setResults(result);
   }, [monthlySalary, age, retirementAge]);
 
+  // Format numbers to TWD
   const formatNumber = (num) => {
     return new Intl.NumberFormat('zh-TW').format(Math.round(num));
   };
@@ -73,6 +88,7 @@ const RetirementCalculator = () => {
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h1 className="text-2xl font-bold mb-6">自願提撥6% 投資比較計算機</h1>
         
+        {/* Important Notes Section */}
         <div className="bg-yellow-50 p-4 rounded-lg mb-6">
           <h2 className="font-bold mb-3">重要說明</h2>
           <ul className="space-y-2">
@@ -82,6 +98,7 @@ const RetirementCalculator = () => {
           </ul>
         </div>
 
+        {/* Input Fields */}
         <div className="space-y-4 mb-6">
           <div>
             <label className="block font-medium mb-1">月薪（元）</label>
@@ -120,6 +137,7 @@ const RetirementCalculator = () => {
           </div>
         </div>
 
+        {/* Results Section */}
         {results && (
           <div className="space-y-6">
             {results.isExceedingMaxSalary && (
@@ -129,6 +147,7 @@ const RetirementCalculator = () => {
             )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Basic Info Card */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-bold mb-3">基本資訊</h3>
                 <div className="space-y-2">
@@ -139,6 +158,7 @@ const RetirementCalculator = () => {
                 </div>
               </div>
               
+              {/* Returns Comparison Card */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-bold mb-3">報酬比較</h3>
                 <div className="space-y-2">
@@ -155,6 +175,7 @@ const RetirementCalculator = () => {
               </div>
             </div>
 
+            {/* Investment Advice Section */}
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-bold mb-3">投資建議</h3>
               <p className="mb-4">
@@ -173,11 +194,6 @@ const RetirementCalculator = () => {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-bold mb-4">訂閱更多投資資訊</h2>
-        <div data-uid="5d34bc689d"></div>
       </div>
     </div>
   );
